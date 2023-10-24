@@ -11,7 +11,7 @@ from ldc.pretrain import PretrainData, PretrainReader
 
 class PdfPretrainReader(PretrainReader):
     """
-    Reader for Parquet database files.
+    Extracts text from PDF files to use for pretraining.
     """
 
     def __init__(self, source: Union[str, List[str]] = None, page_range: str = None, invert: bool = None,
