@@ -14,12 +14,14 @@ class PdfPretrainReader(PretrainReader):
     Extracts text from PDF files to use for pretraining.
     """
 
-    def __init__(self, source: Union[str, List[str]] = None, page_range: str = None, invert: bool = None,
+    def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
+                 page_range: str = None, invert: bool = None,
                  logger_name: str = None, logging_level: str = LOGGING_WARN):
         """
         Initializes the reader.
 
         :param source: the filename(s)
+        :param source_list: the file(s) with filename(s)
         :param page_range: the range of pages to read, None for all
         :type page_range: str
         :param invert: whether to invert the page range matching (ie discard)
@@ -31,6 +33,7 @@ class PdfPretrainReader(PretrainReader):
         """
         super().__init__(logger_name=logger_name, logging_level=logging_level)
         self.source = source
+        self.source_list = source_list
         self.page_range = page_range
         self.invert = invert
         self._inputs = None
@@ -62,7 +65,8 @@ class PdfPretrainReader(PretrainReader):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the PDF file(s) to read; glob syntax is supported", required=True, nargs="+")
+        parser.add_argument("-i", "--input", type=str, help="Path to the PDF file(s) to read; glob syntax is supported", required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the data files to use", required=False, nargs="*")
         parser.add_argument("-p", "--page_range", metavar="RANGE", type=str, default=ALL, help="The range of pages to read; " + Range.help(), required=False)
         parser.add_argument("-V", "--invert", action="store_true", help="Whether to invert the page range, i.e., discard rather than keep.", required=False)
         return parser
@@ -76,6 +80,7 @@ class PdfPretrainReader(PretrainReader):
         """
         super()._apply_args(ns)
         self.source = ns.input
+        self.source_list = ns.input_list
         self.page_range = ns.page_range
         self.invert = ns.invert
 
@@ -84,7 +89,7 @@ class PdfPretrainReader(PretrainReader):
         Initializes the reading, e.g., for opening files or databases.
         """
         super().initialize()
-        self._inputs = locate_files(self.source, fail_if_empty=True)
+        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True)
         if self.page_range is None:
             self.page_range = "first-last"
 
