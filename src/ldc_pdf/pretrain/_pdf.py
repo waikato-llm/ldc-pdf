@@ -5,7 +5,7 @@ from pypdf import PdfReader
 from simple_range import Range, ALL
 
 from ldc.core import LOGGING_WARN, domain_suffix
-from ldc.io import locate_files
+from ldc.base_io import locate_files
 from ldc.pretrain import PretrainData, PretrainReader
 
 
