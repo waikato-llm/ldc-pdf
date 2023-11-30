@@ -4,7 +4,8 @@ from typing import Iterable, List, Union
 from pypdf import PdfReader
 from simple_range import Range, ALL
 
-from ldc.core import LOGGING_WARN, domain_suffix
+from wai.logging import LOGGING_WARNING
+from ldc.core import domain_suffix
 from ldc.base_io import locate_files
 from ldc.pretrain import PretrainData, PretrainReader
 
@@ -16,7 +17,7 @@ class PdfPretrainReader(PretrainReader):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
                  page_range: str = None, invert: bool = None,
-                 logger_name: str = None, logging_level: str = LOGGING_WARN):
+                 logger_name: str = None, logging_level: str = LOGGING_WARNING):
         """
         Initializes the reader.
 
