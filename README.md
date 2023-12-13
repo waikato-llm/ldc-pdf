@@ -11,7 +11,4 @@ pip install git+https://github.com/waikato-llm/ldc-pdf.git
 
 ## Plugins
 
-Filters:
-
-* [from-pdf-pt](plugins/from-pdf-pt.md)
-
+See [here](plugins/README.md) for an overview of all plugins.
