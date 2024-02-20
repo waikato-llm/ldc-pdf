@@ -7,7 +7,7 @@ from simple_range import Range, ALL
 from wai.logging import LOGGING_WARNING
 from seppl.io import locate_files
 from ldc.core import domain_suffix
-from ldc.pretrain import PretrainData, PretrainReader
+from ldc.api.pretrain import PretrainData, PretrainReader
 
 
 class PdfPretrainReader(PretrainReader):

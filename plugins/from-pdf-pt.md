@@ -1,7 +1,7 @@
 # from-pdf-pt
 
 * domain(s): pretrain
-* generates: ldc.pretrain.PretrainData
+* generates: ldc.api.pretrain.PretrainData
 
 Extracts text from PDF files to use for pretraining.
 
