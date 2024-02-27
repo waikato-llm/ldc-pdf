@@ -8,7 +8,8 @@ Extracts text from PDF files to use for pretraining.
 ```
 usage: from-pdf-pt [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                    [-N LOGGER_NAME] [-i [INPUT [INPUT ...]]]
-                   [-I [INPUT_LIST [INPUT_LIST ...]]] [-p RANGE] [-V]
+                   [-I [INPUT_LIST [INPUT_LIST ...]]] [-p RANGE] [-V] [-c]
+                   [-s SEP]
 
 Extracts text from PDF files to use for pretraining.
 
@@ -33,4 +34,11 @@ optional arguments:
                         (default: first-last)
   -V, --invert          Whether to invert the page range, i.e., discard rather
                         than keep. (default: False)
+  -c, --combine_pages   Whether to combine all pages into a single document
+                        instead of forwarding them one-by-one. (default:
+                        False)
+  -s SEP, --page_separator SEP
+                        The separator to use between pages when combining
+                        them; use {NEWLINE} as placeholder for \n (default:
+                        {NEWLINE})
 ```

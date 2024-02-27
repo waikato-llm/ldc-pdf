@@ -9,6 +9,8 @@ from seppl.io import locate_files
 from ldc.core import domain_suffix
 from ldc.api.pretrain import PretrainData, PretrainReader
 
+PH_NEWLINE = "{NEWLINE}"
+
 
 class PdfPretrainReader(PretrainReader):
     """
@@ -16,7 +18,7 @@ class PdfPretrainReader(PretrainReader):
     """
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
-                 page_range: str = None, invert: bool = None,
+                 page_range: str = None, invert: bool = None, combine_pages: bool = None, page_separator: str = PH_NEWLINE,
                  logger_name: str = None, logging_level: str = LOGGING_WARNING):
         """
         Initializes the reader.
@@ -27,6 +29,10 @@ class PdfPretrainReader(PretrainReader):
         :type page_range: str
         :param invert: whether to invert the page range matching (ie discard)
         :type invert: bool
+        :param combine_pages: whether to combine pages rather than forwarding them one by one
+        :type combine_pages: bool
+        :param page_separator: the string to use for separating the pages, use {NEWLINE} as placeholder for \n
+        :type page_separator: str
         :param logger_name: the name to use for the logger
         :type logger_name: str
         :param logging_level: the logging level to use
@@ -37,6 +43,8 @@ class PdfPretrainReader(PretrainReader):
         self.source_list = source_list
         self.page_range = page_range
         self.invert = invert
+        self.combined_pages = combine_pages
+        self.page_separator = page_separator
         self._inputs = None
         self._current_input = None
 
@@ -70,6 +78,8 @@ class PdfPretrainReader(PretrainReader):
         parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the data files to use", required=False, nargs="*")
         parser.add_argument("-p", "--page_range", metavar="RANGE", type=str, default=ALL, help="The range of pages to read; " + Range.help(), required=False)
         parser.add_argument("-V", "--invert", action="store_true", help="Whether to invert the page range, i.e., discard rather than keep.", required=False)
+        parser.add_argument("-c", "--combine_pages", action="store_true", help="Whether to combine all pages into a single document instead of forwarding them one-by-one.", required=False)
+        parser.add_argument("-s", "--page_separator", metavar="SEP", type=str, help="The separator to use between pages when combining them; use " + PH_NEWLINE + " as placeholder for \\n", required=False, default=PH_NEWLINE)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):
@@ -84,6 +94,8 @@ class PdfPretrainReader(PretrainReader):
         self.source_list = ns.input_list
         self.page_range = ns.page_range
         self.invert = ns.invert
+        self.combined_pages = ns.combined_pages
+        self.page_separator = ns.page_separator
 
     def initialize(self):
         """
@@ -93,6 +105,10 @@ class PdfPretrainReader(PretrainReader):
         self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True)
         if self.page_range is None:
             self.page_range = "first-last"
+        if self.combined_pages is None:
+            self.combined_pages = False
+        if self.page_separator is None:
+            self.page_separator = "\n"
 
     def read(self) -> Iterable[PretrainData]:
         """
@@ -110,6 +126,7 @@ class PdfPretrainReader(PretrainReader):
         page_range = Range(self.page_range, len(reader.pages))
         pages = set(page_range.indices())
 
+        all = []
         for i in range(len(reader.pages)):
             if (self.invert and (i in pages)) or (not self.invert and (i not in pages)):
                 continue
@@ -117,12 +134,24 @@ class PdfPretrainReader(PretrainReader):
             page = reader.pages[i]
             text = page.extract_text()
 
+            if not self.combined_pages:
+                meta = dict()
+                meta["file"] = self.session.current_input
+                meta["page"] = i
+
+                yield PretrainData(
+                    content=text,
+                    meta=meta,
+                )
+            else:
+                all.append(text)
+
+        if self.combined_pages:
             meta = dict()
             meta["file"] = self.session.current_input
-            meta["page"] = i
-
+            sep = self.page_separator.replace(PH_NEWLINE, "\n")
             yield PretrainData(
-                content=text,
+                content=sep.join(all),
                 meta=meta,
             )
 
