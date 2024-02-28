@@ -43,7 +43,7 @@ class PdfPretrainReader(PretrainReader):
         self.source_list = source_list
         self.page_range = page_range
         self.invert = invert
-        self.combined_pages = combine_pages
+        self.combine_pages = combine_pages
         self.page_separator = page_separator
         self._inputs = None
         self._current_input = None
@@ -94,7 +94,7 @@ class PdfPretrainReader(PretrainReader):
         self.source_list = ns.input_list
         self.page_range = ns.page_range
         self.invert = ns.invert
-        self.combined_pages = ns.combined_pages
+        self.combine_pages = ns.combine_pages
         self.page_separator = ns.page_separator
 
     def initialize(self):
@@ -105,8 +105,8 @@ class PdfPretrainReader(PretrainReader):
         self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True)
         if self.page_range is None:
             self.page_range = "first-last"
-        if self.combined_pages is None:
-            self.combined_pages = False
+        if self.combine_pages is None:
+            self.combine_pages = False
         if self.page_separator is None:
             self.page_separator = "\n"
 
@@ -134,7 +134,7 @@ class PdfPretrainReader(PretrainReader):
             page = reader.pages[i]
             text = page.extract_text()
 
-            if not self.combined_pages:
+            if not self.combine_pages:
                 meta = dict()
                 meta["file"] = self.session.current_input
                 meta["page"] = i
@@ -146,7 +146,7 @@ class PdfPretrainReader(PretrainReader):
             else:
                 all.append(text)
 
-        if self.combined_pages:
+        if self.combine_pages:
             meta = dict()
             meta["file"] = self.session.current_input
             sep = self.page_separator.replace(PH_NEWLINE, "\n")
