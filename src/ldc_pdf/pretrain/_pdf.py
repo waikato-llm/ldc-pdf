@@ -122,38 +122,42 @@ class PdfPretrainReader(PretrainReader):
         self._current_input = self._inputs.pop(0)
         self.session.current_input = self._current_input
         self.logger().info("Reading from: " + str(self.session.current_input))
-        reader = PdfReader(self.session.current_input)
-        page_range = Range(self.page_range, len(reader.pages))
-        pages = set(page_range.indices())
+        try:
+            reader = PdfReader(self.session.current_input)
+            page_range = Range(self.page_range, len(reader.pages))
+            pages = set(page_range.indices())
 
-        all = []
-        for i in range(len(reader.pages)):
-            if (self.invert and (i in pages)) or (not self.invert and (i not in pages)):
-                continue
+            all = []
+            for i in range(len(reader.pages)):
+                if (self.invert and (i in pages)) or (not self.invert and (i not in pages)):
+                    continue
 
-            page = reader.pages[i]
-            text = page.extract_text()
+                page = reader.pages[i]
+                text = page.extract_text()
 
-            if not self.combine_pages:
+                if not self.combine_pages:
+                    meta = dict()
+                    meta["file"] = self.session.current_input
+                    meta["page"] = i
+
+                    yield PretrainData(
+                        content=text,
+                        meta=meta,
+                    )
+                else:
+                    all.append(text)
+
+            if self.combine_pages:
                 meta = dict()
                 meta["file"] = self.session.current_input
-                meta["page"] = i
-
+                sep = self.page_separator.replace(PH_NEWLINE, "\n")
                 yield PretrainData(
-                    content=text,
+                    content=sep.join(all),
                     meta=meta,
                 )
-            else:
-                all.append(text)
-
-        if self.combine_pages:
-            meta = dict()
-            meta["file"] = self.session.current_input
-            sep = self.page_separator.replace(PH_NEWLINE, "\n")
-            yield PretrainData(
-                content=sep.join(all),
-                meta=meta,
-            )
+        except:
+            self.logger().exception("Failed to read from: %s" % self.session.current_input)
+            yield None
 
     def has_finished(self) -> bool:
         """
