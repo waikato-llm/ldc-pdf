@@ -39,8 +39,8 @@ setup(
     author='Peter Reutemann',
     author_email='fracpete@waikato.ac.nz',
     entry_points={
-        "ldc.readers": [
-            "ldc-pdf-pretrain=ldc_pdf.pretrain:ldc.api.Reader"
-        ]
+        "class_lister": [
+            "ldc_pdf=ldc_pdf.class_lister",
+        ],
     },
 )
