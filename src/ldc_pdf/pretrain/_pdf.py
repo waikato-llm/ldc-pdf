@@ -102,7 +102,7 @@ class PdfPretrainReader(PretrainReader):
         Initializes the reading, e.g., for opening files or databases.
         """
         super().initialize()
-        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True)
+        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.pdf")
         if self.page_range is None:
             self.page_range = "first-last"
         if self.combine_pages is None:

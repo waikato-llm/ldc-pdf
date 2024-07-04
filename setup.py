@@ -31,11 +31,11 @@ setup(
     },
     packages=find_namespace_packages(where='src'),
     install_requires=[
-        "llm-dataset-converter>=0.2.1",
+        "llm-dataset-converter>=0.2.4",
         "pypdf",
         "simple-range>=0.0.3",
     ],
-    version="0.0.1",
+    version="0.0.2",
     author='Peter Reutemann',
     author_email='fracpete@waikato.ac.nz',
     entry_points={
