@@ -6,13 +6,14 @@ from simple_range import Range, ALL
 
 from wai.logging import LOGGING_WARNING
 from seppl.io import locate_files
+from seppl.placeholders import PlaceholderSupporter, placeholder_list
 from ldc.core import domain_suffix
 from ldc.api.pretrain import PretrainData, PretrainReader
 
 PH_NEWLINE = "{NEWLINE}"
 
 
-class PdfPretrainReader(PretrainReader):
+class PdfPretrainReader(PretrainReader, PlaceholderSupporter):
     """
     Extracts text from PDF files to use for pretraining.
     """
@@ -74,8 +75,8 @@ class PdfPretrainReader(PretrainReader):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the PDF file(s) to read; glob syntax is supported", required=False, nargs="*")
-        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the data files to use", required=False, nargs="*")
+        parser.add_argument("-i", "--input", type=str, help="Path to the PDF file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the data files to use; " + placeholder_list(obj=self), required=False, nargs="*")
         parser.add_argument("-p", "--page_range", metavar="RANGE", type=str, default=ALL, help="The range of pages to read; " + Range.help(), required=False)
         parser.add_argument("-V", "--invert", action="store_true", help="Whether to invert the page range, i.e., discard rather than keep.", required=False)
         parser.add_argument("-c", "--combine_pages", action="store_true", help="Whether to combine all pages into a single document instead of forwarding them one-by-one.", required=False)
