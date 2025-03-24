@@ -33,7 +33,7 @@ setup(
     install_requires=[
         "llm_dataset_converter>=0.2.4",
         "pypdf",
-        "simple-range>=0.0.3",
+        "simple_range>=0.0.3",
     ],
     version="0.0.3",
     author='Peter Reutemann',
