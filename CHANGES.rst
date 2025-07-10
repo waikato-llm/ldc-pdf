@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.0.4 (????-??-??)
+0.0.4 (2025-07-11)
 ------------------
 
 - using `simple_range` instead of `simple-range` as dependency
