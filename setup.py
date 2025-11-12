@@ -21,7 +21,6 @@ setup(
     url="https://github.com/waikato-llm/ldc-pdf",
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: MIT License',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Programming Language :: Python :: 3',
     ],
